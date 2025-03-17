@@ -31,7 +31,7 @@ A web application that enables users to upload a PDF, edit it using a modern onl
 | **Backend Framework** | Flask (Python)   |
 | **PDF Processing**    | pdf2htmlEX       |
 | **Rich Text Editor**  | CKEditor 4       |
-| **PDF Export**        | WeasyPrint       |
+| **PDF Export**        | JSPdf            |
 | **Frontend**          | HTML5/CSS3/JS    |
 
 ---
