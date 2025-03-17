@@ -28,7 +28,5 @@ ENV/
 .vscode/
 .idea/
 
-# Project specific
-uploads/*
 !uploads/.gitkeep
 *.pdf
