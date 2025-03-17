@@ -5,8 +5,8 @@
 ## 📌 Overview
 A web application that enables users to upload a PDF, edit it using a modern online editor, and download the modified file as a PDF.
 
+# *Click image to watch demo video*
 [![Video Demo](screenshots/home.png)](https://www.youtube.com/watch?v=W5RSCbVLR7Y)  
-*Click image to watch demo video*
 
 ---
 
@@ -105,6 +105,7 @@ Before starting, ensure you have the following installed:
    ```bash
    cd pdfeditor
    ```
+4. Update CKEditor Licence Key in /templates/editor.html
 
 ---
 
