@@ -193,4 +193,3 @@ Before starting, ensure you have the following installed:
 Hardik Jain, AI &ML Departmen, PESCE Mandya  
 📧 [hardikhardikjain2004@gmail.com](mailto:hardikhardikjain2004@gmail.com)
 ```
-
