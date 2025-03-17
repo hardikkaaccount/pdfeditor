@@ -5,7 +5,7 @@
 ## 📌 Overview
 A web application that enables users to upload a PDF, edit it using a modern online editor, and download the modified file as a PDF.
 
-# Demo Video*
+# **Demo Video**
 <div align="center">
   <video width="100%" controls>
     <source src="screenshots/demo.mp4" type="video/mp4">
@@ -31,7 +31,7 @@ A web application that enables users to upload a PDF, edit it using a modern onl
 | **Backend Framework** | Flask (Python)   |
 | **PDF Processing**    | pdf2htmlEX       |
 | **Rich Text Editor**  | CKEditor 4       |
-| **PDF Export**        | JSPdf            |
+| **PDF Export**        | WeasyPrint       |
 | **Frontend**          | HTML5/CSS3/JS    |
 
 ---
