@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}PDF Editor{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <script src="https://cdn.ckeditor.com/4.16.0-lts/standard/ckeditor.js"></script>
+</head>
+<body>
+    <header>
+        <h1>📝PDF Editor</h1>
+        <nav>
+            <ul>
+                <li><a href="{{ url_for('main.upload_file') }}">Upload PDF</a></li>
+                <li><a href="{{ url_for('main.index') }}">Home</a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        <div class="hero">
+            <h2>Welcome to PDF Editor👋</h2>
+            <p>Transform your PDFs into editable content with ease.</p>
+        </div>
+        <div class="description">
+          <h2>What is PDF Editor?</h2>
+            <p>
+                PDF Editor is a web-based tool that allows users to upload, edit, and manage their PDF documents
+                from anywhere. Whether you're a student, professional, or business user, our platform enables seamless
+                PDF editing directly from your browser without the need for additional software.
+            </p>
+            <p>
+                Once a PDF is uploaded, it is converted into an editable format where you can modify text, add annotations,
+                and enhance the document as needed. After making changes, you can save the updated file or share it with others.
+            </p>
+        </div>
+      <div><a class = "upload" href="{{ url_for('main.upload_file') }}">📤Upload PDF</a></div>
+        <div class="features">
+            <div class="feature">
+                <h3>⬇️ Easy Upload</h3>
+                <p>Upload your PDF files quickly and securely.</p>
+            </div>
+            <div class="feature">
+                <h3>✏️ Edit Anywhere</h3>
+                <p>Edit your documents directly in your browser.</p>
+            </div>
+            <div class="feature">
+                <h3>💾 Save & Share</h3>
+                <p>Save your work and share it with others effortlessly.</p>
+            </div>
+        </div>
+  
+    </main>
+    <footer>
+        <p>Created By Hardik Jain, AI & ML Department PESCE, Mandya</p>
+        <p>Contact: <a href="mailto:hardikhardikjain2004@gmail.com">hardikhardikjain2004@gmail.com</a></p>
+    </footer>
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>

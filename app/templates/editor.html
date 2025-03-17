@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDF to Web Editor</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <script src="https://cdn.ckeditor.com/4.16.0/full-all/ckeditor.js"></script>
+    <script>
+        CKEDITOR.config.licenseKey = 'eyJhbGciOiJFUzI1NiJ9.eyJleHAiOjE3NDMyOTI3OTksImp0aSI6IjcwNGY1OWNlLTI1YTUtNGNhNy05NjBiLTNiZDEzMTc5YTMzMCIsInVzYWdlRW5kcG9pbnQiOiJodHRwczovL3Byb3h5LWV2ZW50LmNrZWRpdG9yLmNvbSIsImRpc3RyaWJ1dGlvbkNoYW5uZWwiOlsiY2xvdWQiLCJkcnVwYWwiLCJzaCJdLCJ3aGl0ZUxhYmVsIjp0cnVlLCJsaWNlbnNlVHlwZSI6InRyaWFsIiwiZmVhdHVyZXMiOlsiKiJdLCJ2YyI6ImNmMDkwZjM4In0.b6UsJT6ro8aAlI5qgJBPNa79zitjmVj_Wumq68hAIhV9ZgFYED9ofCFyxAgTp1m0i5JPJ31sOYkFnvEMt08RXA';
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>Edit PDF Content</h1>
+        <div class="export-buttons">
+            <button onclick="printDocument()" class="btn">⎙Print to PDF</button>
+            <!-- <button onclick="exportToPDF()" class="btn">📑Export to PDF (jsPDF)</button> -->
+            <form action="{{ url_for('main.export_file') }}" method="POST" style="display: inline;">
+                <input type="hidden" name="editor" id="hiddenContent">
+                <!-- <button type="submit" class="btn">Server-side Export</button> -->
+            </form>
+        </div>
+        <div id="editor-container">
+            <textarea name="editor" id="editor" rows="10" cols="80">{{ content|safe }}</textarea>
+        </div>
+    </div>
+
+    <script>
+        CKEDITOR.replace('editor', {
+            allowedContent: true,
+            width: '100%',
+            height: 600,
+            toolbar: [
+                { name: 'document', items: ['Source', '-', 'NewPage', 'Preview', '-', 'Templates', 'Print'] },
+                { name: 'clipboard', items: ['Cut', 'Copy', 'Paste', 'PasteText', 'PasteFromWord', '-', 'Undo', 'Redo'] },
+                { name: 'editing', items: ['Find', 'Replace', '-', 'SelectAll', '-', 'Scayt'] },
+                { name: 'forms', items: ['Form', 'Checkbox', 'Radio', 'TextField', 'Textarea', 'Select', 'Button', 'ImageButton', 'HiddenField'] },
+                '/',
+                { name: 'basicstyles', items: ['Bold', 'Italic', 'Underline', 'Strike', 'Subscript', 'Superscript', '-', 'RemoveFormat'] },
+                { name: 'paragraph', items: ['NumberedList', 'BulletedList', '-', 'Outdent', 'Indent', '-', 'Blockquote', 'CreateDiv', '-', 'JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock', '-', 'BidiLtr', 'BidiRtl', 'Language'] },
+                { name: 'links', items: ['Link', 'Unlink', 'Anchor'] },
+                { name: 'insert', items: ['Image', 'Flash', 'Table', 'HorizontalRule', 'Smiley', 'SpecialChar', 'PageBreak', 'Iframe'] },
+                '/',
+                { name: 'styles', items: ['Styles', 'Format', 'Font', 'FontSize'] },
+                { name: 'colors', items: ['TextColor', 'BGColor'] },
+                { name: 'tools', items: ['Maximize', 'ShowBlocks'] },
+                { name: 'about', items: ['About'] }
+            ]
+        });
+
+        function printDocument() {
+            CKEDITOR.instances.editor.updateElement();
+            let content = CKEDITOR.instances.editor.getData();
+            
+            content = prepareForPDFExport(content);
+
+            const printWindow = window.open('', '_blank');
+
+            const styles = `
+                <style>
+                    @page { margin: 0; size: A4; }
+                    html, body { 
+                        margin: 0; 
+                        padding: 20mm; 
+                        background: white !important; 
+                        box-sizing: border-box; 
+                    }
+                    * { 
+                        margin: 0; 
+                        padding: 0; 
+                        box-sizing: border-box; 
+                        background: none !important; 
+                    }
+                    img { max-width: 100% !important; }
+                </style>
+            `;
+
+            printWindow.document.write(`
+                <!DOCTYPE html>
+                <html>
+                    <head>
+                        <title>Print PDF</title>
+                        ${styles}
+                    </head>
+                    <body>
+                        ${content}
+                    </body>
+                </html>
+            `);
+            printWindow.document.close();
+
+            setTimeout(() => {
+                printWindow.focus();
+                printWindow.print();
+                printWindow.close();
+            }, 500);
+        }
+
+        function prepareForPDFExport(content) {
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(content, 'text/html');
+            doc.querySelectorAll('.pdf2htmlex-element, .annotation-layer, .text-layer')
+            .forEach(el => el.remove());
+            doc.querySelectorAll('*').forEach(el => {
+                el.style.background = 'none';
+            });
+            return doc.documentElement.outerHTML;
+        }
+        async function exportToPDF() {
+            CKEDITOR.instances.editor.updateElement();
+            let content = CKEDITOR.instances.editor.getData();
+            
+            content = prepareForPDFExport(content);
+
+            const iframe = document.createElement('iframe');
+            iframe.style.cssText = 'position: absolute; left: -9999px; width: 210mm; height: 297mm;';
+            document.body.appendChild(iframe);
+
+            const doc = iframe.contentDocument;
+            const extraStyles = `
+                @page { margin: 0; size: A4; }
+                html, body { 
+                    margin: 0; 
+                    padding: 20mm; 
+                    background: white !important; 
+                    box-sizing: border-box; 
+                }
+                /* Reapply resets */
+                * { margin: 0; padding: 0; box-sizing: border-box; background: none !important; }
+                img { max-width: 100% !important; }
+            `;
+            const parentStyles = Array.from(document.querySelectorAll('style'))
+                                .map(s => s.outerHTML).join('\n');
+
+            doc.open();
+            doc.write(`
+                <!DOCTYPE html>
+                <html>
+                    <head>
+                        ${parentStyles}
+                        <style>${extraStyles}</style>
+                    </head>
+                    <body>${content}</body>
+                </html>
+            `);
+            doc.close();
+
+            await new Promise(resolve => setTimeout(resolve, 500));
+            if (window.MathJax && typeof MathJax.typesetPromise === 'function') {
+                await MathJax.typesetPromise([doc.body]);
+            }
+            await loadAllImages(doc);
+
+            const canvas = await html2canvas(doc.body, {
+                scale: 2,
+                useCORS: true,
+                windowWidth: 794,
+            });
+
+            const pdf = new jspdf.jsPDF({
+                orientation: 'portrait',
+                unit: 'mm',
+                format: 'a4',
+                hotfixes: ['px_scaling']
+            });
+
+            const imgData = canvas.toDataURL('image/png');
+            pdf.addImage(imgData, 'PNG', 0, 0, 210, 297);
+
+            pdf.save('export.pdf');
+            document.body.removeChild(iframe);
+        }
+
+        function loadAllImages(doc) {
+            return Promise.all(
+                Array.from(doc.images).map(img => 
+                    img.complete ? Promise.resolve() : new Promise(resolve => {
+                        img.onload = img.onerror = resolve;
+                    })
+                )
+            );
+        }
+
+        function prepareForPDFExport(content) {
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(content, 'text/html');
+            doc.querySelectorAll('.pdf2htmlex-element, .annotation-layer, .text-layer')
+            .forEach(el => el.remove());
+            doc.querySelectorAll('*').forEach(el => {
+                el.style.background = 'none';
+            });
+            return doc.documentElement.outerHTML;
+        }
+    </script>
+
+    <style>
+        .export-buttons {
+            margin-bottom: 20px;
+        }
+        .btn {
+            padding: 10px 20px;
+            margin-right: 10px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .btn:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</body>
+</html>
