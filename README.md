@@ -5,8 +5,14 @@
 ## 📌 Overview
 A web application that enables users to upload a PDF, edit it using a modern online editor, and download the modified file as a PDF.
 
-# *Click image to watch demo video*
-[![Video Demo](screenshots/home.png)](https://www.youtube.com/watch?v=W5RSCbVLR7Y)  
+# Demo Video*
+<div align="center">
+  <video width="100%" controls>
+    <source src="screenshots/demo.mp4" type="video/mp4">
+  </video>
+
+  <p><i>Can't see the video? <a href="https://www.youtube.com/watch?v=W5RSCbVLR7Y">Watch it on YouTube</a></i></p>
+</div>
 
 ---
 
